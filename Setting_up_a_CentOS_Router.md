@@ -132,7 +132,7 @@ If you are unsure what the netmask CIDR is for your installation, you could use 
 
 For this tutorial, eth0 is our external interface. Depending on your setup, this could be swapped. Assign **eth0** to our external interface with the following command:
 
-`firewall-cmd --change-interface=eth0 --zone=external --permanent`
+`firewall-cmd --change-interface=eth0 --zone=external`
 
 #### Set internal zone as default
 
@@ -152,10 +152,9 @@ You can list your firewall rules on your internal and external zones with the fo
 firewall-cmd --list-all --zone=external`
 
 #### Redirect traffic to internal hosts for scoring
-`firewall-cmd --permanent --zone=external --add-forward-port=port=80:proto=tcp:toport=80:toaddr="$WEBSERVER_IP}"
-firewall-cmd --zone=external --add-service=http --permanent
-firewall-cmd --zone=external --add-port=80/tcp --permanent
-`
+`firewall-cmd --permanent --zone=external --add-forward-port=port=80:proto=tcp:toport=80:toaddr="$WEBSERVER_IP}"`
+`firewall-cmd --zone=external --add-service=http --permanent`
+`firewall-cmd --zone=external --add-port=80/tcp --permanent`
 
 ### Configure an internal host
 
