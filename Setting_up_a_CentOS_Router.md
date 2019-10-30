@@ -153,7 +153,9 @@ firewall-cmd --list-all --zone=external`
 
 #### Redirect traffic to internal hosts for scoring
 `firewall-cmd --permanent --zone=external --add-forward-port=port=80:proto=tcp:toport=80:toaddr="$WEBSERVER_IP}"`
+Adding the service couldn't hurt, I don't think it's needed for CNY..
 `firewall-cmd --zone=external --add-service=http --permanent`
+Adding the port couldn't hurt, I don't think it's needed for CNY..
 `firewall-cmd --zone=external --add-port=80/tcp --permanent`
 
 ### Configure an internal host
