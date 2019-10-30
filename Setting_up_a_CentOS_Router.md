@@ -151,6 +151,12 @@ You can list your firewall rules on your internal and external zones with the fo
 `firewall-cmd --list-all
 firewall-cmd --list-all --zone=external`
 
+#### Redirect traffic to internal hosts for scoring
+`firewall-cmd --permanent --zone=external --add-forward-port=port=80:proto=tcp:toport=80:toaddr="$WEBSERVER_IP}"
+firewall-cmd --zone=external --add-service=http --permanent
+firewall-cmd --zone=external --add-port=80/tcp --permanent
+`
+
 ### Configure an internal host
 
 After all is said and done, its not very useful to have your CentOS host configured as a router if you don't use it. Be sure you have a host connected on the same interface (and VLAN if setup) as the internal interface of your router.
