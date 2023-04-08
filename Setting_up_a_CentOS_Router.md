@@ -13,19 +13,19 @@ Replace any instances of `vi` with your command-line editor of choice. Possible 
 
 ## Instructions
 
-Any areas where ${} appears means it is a replaceable variable. Replace the whole text, including ${} with your text.
+Any areas where **$VARIABLES** appears means it is a replaceable variable. Replace the whole text, including ${} with your text.
 
 In our case, here are some variables you can replace, following old CNY Hackathon setups:
 
-| Variable            | Value           |
-| ------------------- | --------------- |
-| ${EXTERNAL_IP}      | 172.18.13.**t** |
-| ${EXTERNAL_NETMASK} | 255.255.255.0   |
-| ${EXTERNAL_GATEWAY} | 172.18.0.1      |
-| ${EXTERNAL_DNS}     | 172.18.0.12     |
-| ${INTERNAL_IP}      | 192.168.**t**.1 |
-| ${INTERNAL_GATEWAY} | 255.255.255.0   |
-| ${NETMASK_CIDR}     | 24              |
+| Variable          | Value           |
+| ----------------- | --------------- |
+| $EXTERNAL_IP      | 172.18.13.**t** |
+| $EXTERNAL_NETMASK | 255.255.255.0   |
+| $EXTERNAL_GATEWAY | 172.18.0.1      |
+| $EXTERNAL_DNS     | 172.18.0.12     |
+| $INTERNAL_IP      | 192.168.**t**.1 |
+| $INTERNAL_GATEWAY | 255.255.255.0   |
+| $NETMASK_CIDR     | 24              |
 
 > **Note:** Replace any instances of **t** with your team number. Alternatively, for a private setup, just use 1 for simplicity.
 
@@ -57,10 +57,10 @@ Set the following lines to the values corresponding, or create the lines if they
 ```ini
 BOOTPROTO=static
 ONBOOT=yes
-IPADDR="${EXTERNAL_IP}"
-NETMASK="${EXTERNAL_NETMASK}"
-GATEWAY="${EXTERNAL_GATEWAY}"
-DNS1="${EXTERNAL_DNS}"
+IPADDR=$EXTERNAL_IP
+NETMASK=$EXTERNAL_NETMASK
+GATEWAY=$EXTERNAL_GATEWAY
+DNS1=$EXTERNAL_DNS
 ZONE=external
 ```
 
@@ -77,9 +77,9 @@ Set the following lines to the values corresponding, or create the lines if they
 ```ini
 BOOTPROTO=static
 ONBOOT=yes
-IPADDR="${INTERNAL_IP}"
-NETMASK="${INTERNAL_NETMASK}"
-DNS1="${INTERNAL_DNS}"
+IPADDR=$INTERNAL_IP
+NETMASK=$INTERNAL_NETMASK
+DNS1=$INTERNAL_DNS
 ZONE=internal
 ```
 
@@ -124,9 +124,9 @@ Execute the following command to reload the **ip_foward.conf** configuration fil
 
 This will allow IP masquerading across the internal and external interfaces.
 
-`firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth0 -j MASQUERADE -s ${INTERNAL_IP}/${NETMASK_CIDR}`
+`firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth0 -j MASQUERADE -s $INTERNAL_IP/$NETMASK_CIDR`
 
-If you are unsure what the netmask CIDR is for your installation, you could use **${INTERNAL_IP}/24** by default.
+If you are unsure what the netmask CIDR is for your installation, you could use **$INTERNAL_IP/24** by default.
 
 #### Assign interface to external zone
 
@@ -138,7 +138,7 @@ For this tutorial, eth0 is our external interface. Depending on your setup, this
 
 Set the internal zone as the default zone for `firewalld` to perform routing with:
 
-`firewall-cmd --set-default-zone=internal --permanent`
+`firewall-cmd --set-default-zone=internal`
 
 Reload `firewalld` so your changes take effect:
 
@@ -152,7 +152,9 @@ You can list your firewall rules on your internal and external zones with the fo
 firewall-cmd --list-all --zone=external`
 
 #### Redirect traffic to internal hosts for scoring
-`firewall-cmd --permanent --zone=external --add-forward-port=port=80:proto=tcp:toport=80:toaddr="$WEBSERVER_IP}"`
+`firewall-cmd --permanent --zone=external --add-forward-port=port=80:proto=tcp:toport=80:toaddr=WEBSERVER_IP`
+
+`firewall-cmd --permanent --zone=external --add-forward-port=port=443:proto=tcp:toport=443:toaddr=WEBSERVER_IP`
 
 Adding the service couldn't hurt, I don't think it's needed for CNY:
 
@@ -161,6 +163,8 @@ Adding the service couldn't hurt, I don't think it's needed for CNY:
 Adding the port couldn't hurt, I don't think it's needed for CNY:
 
 `firewall-cmd --zone=external --add-port=80/tcp --permanent`
+
+`firewall-cmd --zone=external --add-port=443/tcp --permanent`
 
 ### Configure an internal host
 
